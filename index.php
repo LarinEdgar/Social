@@ -8,18 +8,22 @@ $content = $content.file_get_contents('bottom.html');
 
 echo $content;
 
-print_r($_GET);
+if (isset($_POST)) {
+    $usersListFIleName = 'users.json';
+    $users = loadUsers($usersListFIleName);
 
-//echo 'name: ' . $_GET['name'];
-$usersListFIleName = 'users.json';
-$users = loadUsers($usersListFIleName);
+    $name = $_POST['name'];
+    $email = $_POST['email'];
 
-$users[] = $_GET['name'];
-//var_dump($users);
+    $users[$email] = $name;
 
-file_put_contents($usersListFIleName, json_encode($users));
+    file_put_contents($usersListFIleName, json_encode($users));
 
-$users = loadUsers($usersListFIleName);
+    $users = loadUsers($usersListFIleName);
 
-echo '<br/>';
-print_r($users);
+    foreach ($users as $email => $name) {
+        echo '<br/>';
+        echo "{$email} => {$name} ";
+    }
+}
+
