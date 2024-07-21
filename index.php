@@ -3,27 +3,42 @@
 include 'functions.php';
 
 $content = file_get_contents('head.html');
-$content = $content.file_get_contents('newUser.html');
-$content = $content.file_get_contents('bottom.html');
+$content = $content . file_get_contents('newUser.html');
+$content = $content . file_get_contents('deleteUser.html');
+$content = $content . file_get_contents('bottom.html');
 
 echo $content;
 
-if (isset($_POST)) {
-    $usersListFIleName = 'users.json';
-    $users = loadUsers($usersListFIleName);
+print_r($_POST);
 
-    $name = $_POST['name'];
-    $email = $_POST['email'];
+$usersListFileName = 'users.json';
+$users = loadUsers($usersListFileName);
 
+showUsers($users);
+
+if ($_POST == []) {
+    return;
+}
+
+$name = $_POST['name'];
+$email = $_POST['email'];
+
+if (isset($_POST['delUser'])) {
+    $deleteUser = $_POST['delUser'];
+    $users = deleteUser($users, $deleteUser);
+
+    saveUsers($usersListFileName, $users);
+}
+
+if (array_key_exists($email, $users)) {
+    echo '<strong>Такой пользователь уже существует</strong>';
+} else {
     $users[$email] = $name;
 
-    file_put_contents($usersListFIleName, json_encode($users));
+    saveUsers($usersListFileName, $users);
 
-    $users = loadUsers($usersListFIleName);
-
-    foreach ($users as $email => $name) {
-        echo '<br/>';
-        echo "{$email} => {$name} ";
-    }
+    $users = loadUsers($usersListFileName);
 }
+
+showUsers($users);
 
